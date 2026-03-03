@@ -3,7 +3,8 @@
 import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleOAuth } from "@react-oauth/google";
+import { GoogleIcon } from "@/components/icons/google";
 import { useAuth } from "../contexts/AuthContext";
 import {
   Card,
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const { login, googleLogin, user, loading } = useAuth();
+  const { clientId } = useGoogleOAuth();
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -112,19 +114,26 @@ export default function LoginPage() {
             <div className="h-px flex-1 bg-border" />
           </div>
 
-          <div className="flex justify-center">
-            <GoogleLogin
-              onSuccess={(response) => {
-                if (response.credential) {
-                  handleGoogleLogin(response.credential);
-                }
-              }}
-              onError={() => {
-                setError("Error al iniciar sesión con Google");
-              }}
-              width="100%"
-            />
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              if (!window.google?.accounts?.id) return;
+              window.google.accounts.id.initialize({
+                client_id: clientId,
+                callback: (response: { credential?: string }) => {
+                  if (response.credential) {
+                    handleGoogleLogin(response.credential);
+                  }
+                },
+              });
+              window.google.accounts.id.prompt();
+            }}
+          >
+            <GoogleIcon className="h-5 w-5" />
+            Continuar con Google
+          </Button>
         </CardContent>
       </Card>
     </main>
