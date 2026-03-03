@@ -1,3 +1,4 @@
+from constance import config
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -46,9 +47,20 @@ def set_auth_cookies(response, refresh):
     return response
 
 
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def auth_config_view(request):
+    return Response({
+        "password": config.AUTH_PASSWORD_ENABLED,
+        "google": config.AUTH_GOOGLE_ENABLED and bool(settings.GOOGLE_CLIENT_ID),
+    })
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login_view(request):
+    if not config.AUTH_PASSWORD_ENABLED:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     username = request.data.get("username")
     password = request.data.get("password")
 
@@ -118,6 +130,9 @@ def refresh_view(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def google_auth_view(request):
+    if not (config.AUTH_GOOGLE_ENABLED and settings.GOOGLE_CLIENT_ID):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
     credential = request.data.get("credential")
     if not credential:
         return Response(

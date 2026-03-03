@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
+    "constance",
+    "constance.backends.database",
 ]
 
 MIDDLEWARE = [
@@ -98,3 +100,16 @@ SIMPLE_JWT = {
 CORS_ALLOW_CREDENTIALS = True
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+
+AUTH_PASSWORD_ENABLED = os.environ.get("AUTH_PASSWORD_ENABLED", "True").lower() in ("true", "1", "yes")
+AUTH_GOOGLE_ENABLED = (
+    os.environ.get("AUTH_GOOGLE_ENABLED", "True").lower() in ("true", "1", "yes")
+    and bool(GOOGLE_CLIENT_ID)
+)
+
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+
+CONSTANCE_CONFIG = {
+    "AUTH_PASSWORD_ENABLED": (AUTH_PASSWORD_ENABLED, "Habilitar login con usuario y contraseña", bool),
+    "AUTH_GOOGLE_ENABLED": (AUTH_GOOGLE_ENABLED, "Habilitar login con Google", bool),
+}

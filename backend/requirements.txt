@@ -6,3 +6,4 @@ psycopg[binary]
 google-auth
 requests
 gunicorn
+django-constance[database]
