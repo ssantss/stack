@@ -1,6 +1,6 @@
-.PHONY: up down build prune logs backend-logs frontend-logs migrate createsuperuser shell
+.PHONY: up dev down build prune logs backend-logs frontend-logs migrate createsuperuser shell
 
-up:
+up dev:
 	docker compose up --build
 
 down:
