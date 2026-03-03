@@ -1,0 +1,8 @@
+Django==6.0.2
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+psycopg[binary]
+google-auth
+requests
+gunicorn
